@@ -1,3 +1,5 @@
+import random
+
 Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
 PlayerTurn = 1;
 GameIsRunning = True
@@ -16,11 +18,14 @@ def AskPlayerCell():
                 break
 
     elif PlayerTurn == 2:
-        cell = int(input("Player 2 turn (Enter a number 1 - 9) : "))
-        while True:
-            if Cases[cell] != " ":
-                cell = int(input("Cell taken !!, retry, Player 2 turn (Enter a number 1 - 9) : "))
+        cell = random.randint(1,9) # Generate a random number
+        while True :
+            if cell > 9 or cell < 1:
+                cell = random.randint(1,9)
+            elif Cases[cell] != " ":
+                cell = random.randint(1,9)
             else:
+                print(f"IA took {cell}")
                 Cases[cell]="O"
                 break
 
@@ -58,19 +63,19 @@ def CheckWinCondition():
 
         case {1:"O", 2:"O",3:"O"}:
             GameIsRunning = False
-            return print("Player 2 Win")
+            return print("IA Win")
         case {4:"O", 5:"O",6:"O"}:
             GameIsRunning = False
-            return print("Player 2 Win")
+            return print("IA Win")
         case {7:"O", 8:"O",9:"O"}:
             GameIsRunning = False
-            return print("Player 2 Win")
+            return print("IA Win")
         case {1:"O", 5:"O",9:"O"}:
             GameIsRunning = False
-            return print("Player 2 Win")
+            return print("IA Win")
         case {3:"O", 5:"O",7:"O"}:
             GameIsRunning = False
-            return print("Player 2 Win")
+            return print("IA Win")
 
     if all(value != " " for value in Cases.values()):
         GameIsRunning = False
@@ -86,6 +91,7 @@ def DisplayCells():
     print("-----------")
     print(f" {Cases[7]} | {Cases[8]} | {Cases[9]} ")
     print("")
+
 
 def InitGame():
     while GameIsRunning:
