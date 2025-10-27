@@ -1,4 +1,4 @@
-Cases={1:"empty", 2:"empty", 3:"empty", 4:"empty", 5:"empty", 6:"empty", 7:"empty", 8:"empty", 9:"empty"};
+Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
 PlayerTurn = 1;
 GameIsRunning = True
 
@@ -6,20 +6,22 @@ GameIsRunning = True
 def AskPlayerCell():
     if PlayerTurn == 1:
         cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
-        while True:
-            if Cases[cell] != "empty":
+        while True :
+            if cell > 9 or cell < 1:
+                cell = int(input("Retry, Player 1 turn (Enter a number 1 - 9 !!!) : "))
+            elif Cases[cell] != " ":
                 cell = int(input("Cell taken !!, retry, Player 1 turn (Enter a number 1 - 9) : "))
             else:
-                Cases[cell]="Cross"
+                Cases[cell]="X"
                 break
 
     elif PlayerTurn == 2:
         cell = int(input("Player 2 turn (Enter a number 1 - 9) : "))
         while True:
-            if Cases[cell] != "empty":
+            if Cases[cell] != " ":
                 cell = int(input("Cell taken !!, retry, Player 2 turn (Enter a number 1 - 9) : "))
             else:
-                Cases[cell]="Round"
+                Cases[cell]="O"
                 break
 
 
@@ -38,49 +40,57 @@ def CheckWinCondition():
     global GameIsRunning
 
     match Cases:
-        case {1:"Cross", 2:"Cross",3:"Cross"}:
+        case {1:"X", 2:"X",3:"X"}:
             GameIsRunning = False
             return print("Player 1 Win")
-        case {4:"Cross", 5:"Cross",6:"Cross"}:
+        case {4:"X", 5:"X",6:"X"}:
             GameIsRunning = False
             return print("Player 1 Win")
-        case {7:"Cross", 8:"Cross",9:"Cross"}:
+        case {7:"X", 8:"X",9:"X"}:
             GameIsRunning = False
             return print("Player 1 Win")
-        case {1:"Cross", 5:"Cross",9:"Cross"}:
+        case {1:"X", 5:"X",9:"X"}:
             GameIsRunning = False
             return print("Player 1 Win")
-        case {3:"Cross", 5:"Cross",7:"Cross"}:
+        case {3:"X", 5:"X",7:"X"}:
             GameIsRunning = False
             return print("Player 1 Win")
 
-        case {1:"Round", 2:"Round",3:"Round"}:
+        case {1:"O", 2:"O",3:"O"}:
             GameIsRunning = False
             return print("Player 2 Win")
-        case {4:"Round", 5:"Round",6:"Round"}:
+        case {4:"O", 5:"O",6:"O"}:
             GameIsRunning = False
             return print("Player 2 Win")
-        case {7:"Round", 8:"Round",9:"Round"}:
+        case {7:"O", 8:"O",9:"O"}:
             GameIsRunning = False
             return print("Player 2 Win")
-        case {1:"Round", 5:"Round",9:"Round"}:
+        case {1:"O", 5:"O",9:"O"}:
             GameIsRunning = False
             return print("Player 2 Win")
-        case {3:"Round", 5:"Round",7:"Round"}:
+        case {3:"O", 5:"O",7:"O"}:
             GameIsRunning = False
             return print("Player 2 Win")
 
-    if all(value != "empty" for value in Cases.values()):
+    if all(value != " " for value in Cases.values()):
         GameIsRunning = False
         return print("Draw")
     else:
         return 
 
+def DisplayCells():
+    print("")
+    print(f" {Cases[1]} | {Cases[2]} | {Cases[3]} ")
+    print("-----------")
+    print(f" {Cases[4]} | {Cases[5]} | {Cases[6]} ")
+    print("-----------")
+    print(f" {Cases[7]} | {Cases[8]} | {Cases[9]} ")
+    print("")
 
 def InitGame():
     while GameIsRunning:
         AskPlayerCell()
-        print(Cases)
+        DisplayCells()
         CheckWinCondition()
         ChangePlayerTurn()
 
