@@ -2,6 +2,7 @@ import pygame
 
 pygame.init()
 
+# Screen initialisation
 HEIGHT = 600
 WIDTH = 600
 DIMENSION_CASE = WIDTH // 3
@@ -10,15 +11,19 @@ TITTLE = "Tic-Tac-Toe"
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
 pygame.display.set_caption(TITTLE)
 
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GREY = (200, 200, 200)
+BACKGROUND_COLOR = (25, 25, 50)
+WHITE = (200, 200, 200)
+WHITE1 = (255, 255, 255)
+BLUE = (70, 70, 255)
+RED = (255, 70, 70)
 
 board_rects = {} 
 Cases = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
 
+game_message = None
+
 def DrawBoard():
-    screen.fill(WHITE)
+    screen.fill(BACKGROUND_COLOR)
 
     for i in range(3):
         for j in range(3):
@@ -28,17 +33,30 @@ def DrawBoard():
             cell_number = i * 3 + j + 1
 
             rect = pygame.Rect(x, y, DIMENSION_CASE, DIMENSION_CASE)
-            board_rects[cell_number] = rect # Stocke le Rect dans notre dictionnaire
+            board_rects[cell_number] = rect
 
             # Draw case border
-            pygame.draw.rect(screen, BLACK, rect, 3) # 3 = Thickness
+            pygame.draw.rect(screen, WHITE, rect, 3) # 3 = Thickness
 
             # Show (X, O, ou empty)
             if Cases[cell_number] != " ":
-                font = pygame.font.Font(None, 150) # Create a font style
-                text_surface = font.render(Cases[cell_number], True, BLACK) # Render the Text
+                font = pygame.font.Font(None, 150)
+                
+                if Cases[cell_number] == "X":
+                    color = BLUE
+                else: 
+                    color = RED
+                
+                text_surface = font.render(Cases[cell_number], True, color) # Render the Text
                 text_rect = text_surface.get_rect(center=rect.center) # Text center
                 screen.blit(text_surface, text_rect) # Show text
+    
+    if game_message:
+        font = pygame.font.Font(None, 30)
+        text_surface = font.render(game_message, True, WHITE1)
+        text_rect = text_surface.get_rect(center=(WIDTH//2, HEIGHT//2))
+        screen.blit(text_surface, text_rect)
+
 
 def CheckWinCondition():
     win_conditions = [
@@ -47,10 +65,11 @@ def CheckWinCondition():
         (1, 5, 9), (3, 5, 7)               
     ]
 
+    #Check if there is a 3 suite of X or O
     for condition in win_conditions:
         values = [Cases[pos] for pos in condition]
         if values[0] != " " and all(val == values[0] for val in values):
-            return values[0]
+            return values[0] # return winner player
     
     if all(case != " " for case in Cases.values()):
         return "Draw"
@@ -58,11 +77,10 @@ def CheckWinCondition():
     return None
 
 
-
 # --- Game ---
-
 running = True
 player_turn = "X"
+game_message = None
 
 while running:
     for event in pygame.event.get():
@@ -70,7 +88,7 @@ while running:
             running = False
         
         # --- Clic event ---
-        if event.type == pygame.MOUSEBUTTONDOWN:
+        if event.type == pygame.MOUSEBUTTONDOWN and game_message is None:
             if event.button == 1:
                 mouse_x, mouse_y = event.pos
 
@@ -78,7 +96,6 @@ while running:
                     if rect.collidepoint(mouse_x, mouse_y):
                         if Cases[cell_number] == " ": 
                             Cases[cell_number] = player_turn
-                            print(f"Cell {cell_number} clicked by {player_turn}")
                             
                             # Change turn
                             if player_turn == "X":
@@ -88,18 +105,24 @@ while running:
                             
                             result = CheckWinCondition()
                             if result:
-                                if result =="Draw":
-                                    print("Draw")
+                                if result == "Draw":
+                                    game_message = "Draw ! Clic for restart"
                                 else:
-                                    print(f"Player {result} won")
-                                running = False
-
+                                    game_message = f"Player {result} won ! Clic for restart"
+                        
                         else:
                             print(f"Cell {cell_number} already taken.")
                         break
+        
+        # Permettre de recommencer en cliquant après la fin du jeu
+        elif event.type == pygame.MOUSEBUTTONDOWN and game_message is not None:
+            # Réinitialiser le jeu
+            Cases = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
+            player_turn = "X"
+            game_message = None
 
     DrawBoard()
     pygame.display.flip()
 
 pygame.quit()
-print("Jeu fermé.")
+print("Game closed")
