@@ -1,104 +1,100 @@
-import random
+import pygame
 
-Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
-PlayerTurn = 1;
-GameIsRunning = True
+# --- Initialisation de Pygame ---
+pygame.init()
 
+# --- Configuration de la fenêtre ---
+LARGEUR_ECRAN = 600
+HAUTEUR_ECRAN = 600
+DIMENSION_CASE = LARGEUR_ECRAN // 3 # Chaque case aura une dimension de 200x200 pour un 3x3
+TITRE_FENETRE = "Tic-Tac-Toe Clicable"
 
-def AskPlayerCell():
-    if PlayerTurn == 1:
-        cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
-        while True :
-            if cell > 9 or cell < 1:
-                cell = int(input("Retry, Player 1 turn (Enter a number 1 - 9 !!!) : "))
-            elif Cases[cell] != " ":
-                cell = int(input("Cell taken !!, retry, Player 1 turn (Enter a number 1 - 9) : "))
-            else:
-                Cases[cell]="X"
-                break
+screen = pygame.display.set_mode((LARGEUR_ECRAN, HAUTEUR_ECRAN))
+pygame.display.set_caption(TITRE_FENETRE)
 
-    elif PlayerTurn == 2:
-        cell = random.randint(1,9) # Generate a random number
-        while True :
-            if cell > 9 or cell < 1:
-                cell = random.randint(1,9)
-            elif Cases[cell] != " ":
-                cell = random.randint(1,9)
-            else:
-                print(f"IA took {cell}")
-                Cases[cell]="O"
-                break
+# --- Couleurs ---
+BLANC = (255, 255, 255)
+NOIR = (0, 0, 0)
+GRIS_CLAIR = (200, 200, 200)
 
+# --- Initialisation du plateau (similaire à votre dictionnaire Cases) ---
+# Nous allons stocker les objets Rect de Pygame pour chaque case,
+# ce qui facilite la détection des clics.
+board_rects = {} # Dictionnaire pour stocker les objets Rect et les associer aux numéros de case
+# Les valeurs de Cases sont des espaces " " initialement
+Cases = {1: " ", 2: " ", 3: " ", 4: " ", 5: " ", 6: " ", 7: " ", 8: " ", 9: " "}
 
-def ChangePlayerTurn():
-    global PlayerTurn # We initialize the value as global cause he gonna create a local value
+# --- Fonction pour dessiner le plateau ---
+def draw_board():
+    screen.fill(BLANC) # Fond blanc
 
-    if PlayerTurn == 1 :
-        PlayerTurn = 2
-    elif PlayerTurn == 2 :
-        PlayerTurn = 1
-    else:
-        return error
+    for i in range(3):
+        for j in range(3):
+            # Calcul des coordonnées x, y du coin supérieur gauche de la case
+            x = j * DIMENSION_CASE
+            y = i * DIMENSION_CASE
+            
+            # Calcul du numéro de la case (1 à 9)
+            cell_number = i * 3 + j + 1
 
+            # Création de l'objet Rect pour la case
+            # Un Rect prend (x, y, largeur, hauteur)
+            rect = pygame.Rect(x, y, DIMENSION_CASE, DIMENSION_CASE)
+            board_rects[cell_number] = rect # Stocke le Rect dans notre dictionnaire
 
-def CheckWinCondition():
-    global GameIsRunning
+            # Dessiner le contour de la case
+            pygame.draw.rect(screen, NOIR, rect, 3) # Le '3' est l'épaisseur du trait
 
-    match Cases:
-        case {1:"X", 2:"X",3:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
-        case {4:"X", 5:"X",6:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
-        case {7:"X", 8:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
-        case {1:"X", 5:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
-        case {3:"X", 5:"X",7:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
-
-        case {1:"O", 2:"O",3:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
-        case {4:"O", 5:"O",6:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
-        case {7:"O", 8:"O",9:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
-        case {1:"O", 5:"O",9:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
-        case {3:"O", 5:"O",7:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
-
-    if all(value != " " for value in Cases.values()):
-        GameIsRunning = False
-        return print("Draw")
-    else:
-        return 
-
-def DisplayCells():
-    print("")
-    print(f" {Cases[1]} | {Cases[2]} | {Cases[3]} ")
-    print("-----------")
-    print(f" {Cases[4]} | {Cases[5]} | {Cases[6]} ")
-    print("-----------")
-    print(f" {Cases[7]} | {Cases[8]} | {Cases[9]} ")
-    print("")
+            # Afficher le contenu de la case (X, O, ou vide)
+            if Cases[cell_number] != " ":
+                font = pygame.font.Font(None, 150) # Crée une police
+                text_surface = font.render(Cases[cell_number], True, NOIR) # Rend le texte
+                text_rect = text_surface.get_rect(center=rect.center) # Centre le texte dans la case
+                screen.blit(text_surface, text_rect) # Affiche le texte
 
 
-def InitGame():
-    while GameIsRunning:
-        AskPlayerCell()
-        DisplayCells()
-        CheckWinCondition()
-        ChangePlayerTurn()
+# --- Boucle de jeu principale ---
+running = True
+player_turn = "X" # On commence avec le joueur X
 
+while running:
+    for event in pygame.event.get():
+        if event.type == pygame.QUIT:
+            running = False
+        
+        # --- Détection d'un clic de souris ---
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1: # Clic gauche de la souris
+                mouse_x, mouse_y = event.pos # Coordonnées du clic
 
-InitGame()
+                # Parcourir nos rectangles de cases pour voir lequel a été cliqué
+                for cell_number, rect in board_rects.items():
+                    if rect.collidepoint(mouse_x, mouse_y): # Vérifie si le clic est dans ce rectangle
+                        if Cases[cell_number] == " ": # Si la case est vide
+                            Cases[cell_number] = player_turn # Place le symbole du joueur actuel
+                            print(f"Case {cell_number} cliquée par {player_turn}")
+                            
+                            # Changer de joueur pour le prochain tour
+                            if player_turn == "X":
+                                player_turn = "O"
+                            else:
+                                player_turn = "X"
+                            
+                            # Ici, vous appelleriez vos fonctions CheckWinCondition()
+                            # ou CheckGameStatus() pour voir si le jeu est terminé.
+                            # Par exemple:
+                            # status = CheckGameStatus(Cases, "X", "O")
+                            # if status is not None:
+                            #     print(f"Jeu terminé! Statut: {status}")
+                            #     running = False # Arrête la boucle de jeu
+                        else:
+                            print(f"Case {cell_number} déjà prise.")
+                        break # Un clic ne peut être que dans une seule case, donc on peut sortir de la boucle
+
+    # --- Dessin du plateau et mise à jour de l'affichage ---
+    draw_board() # Redessine tout le plateau à chaque frame
+    pygame.display.flip()
+
+# --- Quitter Pygame ---
+pygame.quit()
+print("Jeu fermé.")
