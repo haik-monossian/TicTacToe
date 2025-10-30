@@ -2,7 +2,7 @@ import random
 
 Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
 
-def AskPlayerCell(player_turn):
+def ask_player_cell(player_turn):
     if player_turn == 1:
         cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
         while True :
@@ -28,14 +28,14 @@ def AskPlayerCell(player_turn):
 
     return player_turn  # Retourne le tour (inchangé ici, mais pour cohérence)
 
-def ChangePlayerTurn(player_turn):
+def change_player_turn(player_turn):
     if player_turn == 1 :
         return 2
     elif player_turn == 2 :
         return 1
     # Plus de return error nécessaire
 
-def CheckWinCondition(game_is_running):
+def check_win_condition(game_is_running):
     match Cases:
         case {1:"X", 2:"X",3:"X"}:
             return False, "Player 1 Win"
@@ -64,7 +64,7 @@ def CheckWinCondition(game_is_running):
     else:
         return game_is_running, None  # Aucun changement
 
-def DisplayCells():
+def display_cells():
     print("")
     print(f" {Cases[1]} | {Cases[2]} | {Cases[3]} ")
     print("-----------")
@@ -74,17 +74,17 @@ def DisplayCells():
     print("")
 
 
-def InitGame():
+def init_game():
     player_turn = 1
     game_is_running = True
     
     while game_is_running:
-        AskPlayerCell(player_turn)
-        DisplayCells()
-        game_is_running, message = CheckWinCondition(game_is_running)
+        ask_player_cell(player_turn)
+        display_cells()
+        game_is_running, message = check_win_condition(game_is_running)
         if message:
             print(message)
-        player_turn = ChangePlayerTurn(player_turn)
+        player_turn = change_player_turn(player_turn)
 
 
-InitGame()
+init_game()
