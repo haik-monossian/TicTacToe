@@ -1,98 +1,84 @@
-Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
-PlayerTurn = 1;
-GameIsRunning = True
+cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "}
 
 
-def AskPlayerCell():
-    if PlayerTurn == 1:
+def ask_player_cell(player_turn):
+    if player_turn == 1:
         cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
         while True :
             if cell > 9 or cell < 1:
                 cell = int(input("Retry, Player 1 turn (Enter a number 1 - 9 !!!) : "))
-            elif Cases[cell] != " ":
+            elif cases[cell] != " ":
                 cell = int(input("Cell taken !!, retry, Player 1 turn (Enter a number 1 - 9) : "))
             else:
-                Cases[cell]="X"
+                cases[cell]="X"
                 break
 
-    elif PlayerTurn == 2:
+    elif player_turn == 2:
         cell = int(input("Player 2 turn (Enter a number 1 - 9) : "))
         while True:
-            if Cases[cell] != " ":
+            if cases[cell] != " ":
                 cell = int(input("Cell taken !!, retry, Player 2 turn (Enter a number 1 - 9) : "))
             else:
-                Cases[cell]="O"
+                cases[cell]="O"
                 break
 
 
-def ChangePlayerTurn():
-    global PlayerTurn # We initialize the value as global cause he gonna create a local value
-
-    if PlayerTurn == 1 :
-        PlayerTurn = 2
-    elif PlayerTurn == 2 :
-        PlayerTurn = 1
-    else:
-        return error
+def change_player_turn(player_turn):
+    if player_turn == 1 :
+        return 2
+    elif player_turn == 2 :
+        return 1
 
 
-def CheckWinCondition():
-    global GameIsRunning
-
-    match Cases:
+def check_win_condition(game_is_running):
+    match cases:
         case {1:"X", 2:"X",3:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {4:"X", 5:"X",6:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {7:"X", 8:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {1:"X", 5:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {3:"X", 5:"X",7:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
 
         case {1:"O", 2:"O",3:"O"}:
-            GameIsRunning = False
-            return print("Player 2 Win")
+            return False, "Player 2 Win"
         case {4:"O", 5:"O",6:"O"}:
-            GameIsRunning = False
-            return print("Player 2 Win")
+            return False, "Player 2 Win"
         case {7:"O", 8:"O",9:"O"}:
-            GameIsRunning = False
-            return print("Player 2 Win")
+            return False, "Player 2 Win"
         case {1:"O", 5:"O",9:"O"}:
-            GameIsRunning = False
-            return print("Player 2 Win")
+            return False, "Player 2 Win"
         case {3:"O", 5:"O",7:"O"}:
-            GameIsRunning = False
-            return print("Player 2 Win")
+            return False, "Player 2 Win"
 
-    if all(value != " " for value in Cases.values()):
-        GameIsRunning = False
-        return print("Draw")
-    else:
-        return 
+    if all(value != " " for value in cases.values()):
+        return False, "Draw"
+    else :
+        return game_is_running, None
 
-def DisplayCells():
+def display_cells():
     print("")
-    print(f" {Cases[1]} | {Cases[2]} | {Cases[3]} ")
+    print(f" {cases[1]} | {cases[2]} | {cases[3]} ")
     print("-----------")
-    print(f" {Cases[4]} | {Cases[5]} | {Cases[6]} ")
+    print(f" {cases[4]} | {cases[5]} | {cases[6]} ")
     print("-----------")
-    print(f" {Cases[7]} | {Cases[8]} | {Cases[9]} ")
+    print(f" {cases[7]} | {cases[8]} | {cases[9]} ")
     print("")
 
-def InitGame():
-    while GameIsRunning:
-        AskPlayerCell()
-        DisplayCells()
-        CheckWinCondition()
-        ChangePlayerTurn()
+def init_game():
+    game_is_running = True
+    player_turn = 1
+
+    while game_is_running:
+        ask_player_cell(player_turn)
+        display_cells()
+        game_is_running, message = check_win_condition(game_is_running)
+        if message:
+            print(message)
+        player_turn = change_player_turn(player_turn)
 
 
-InitGame()
+init_game()
