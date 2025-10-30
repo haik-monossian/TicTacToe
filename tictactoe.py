@@ -26,14 +26,13 @@ def ask_player_cell(player_turn):
                 Cases[cell]="O"
                 break
 
-    return player_turn  # Retourne le tour (inchangé ici, mais pour cohérence)
+    return player_turn
 
 def change_player_turn(player_turn):
     if player_turn == 1 :
         return 2
     elif player_turn == 2 :
         return 1
-    # Plus de return error nécessaire
 
 def check_win_condition(game_is_running):
     match Cases:
@@ -62,7 +61,7 @@ def check_win_condition(game_is_running):
     if all(value != " " for value in Cases.values()):
         return False, "Draw"
     else:
-        return game_is_running, None  # Aucun changement
+        return game_is_running, None
 
 def display_cells():
     print("")
