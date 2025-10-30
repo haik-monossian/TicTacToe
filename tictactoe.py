@@ -1,12 +1,9 @@
 import random
 
 Cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
-PlayerTurn = 1;
-GameIsRunning = True
 
-
-def AskPlayerCell():
-    if PlayerTurn == 1:
+def AskPlayerCell(player_turn):
+    if player_turn == 1:
         cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
         while True :
             if cell > 9 or cell < 1:
@@ -17,7 +14,7 @@ def AskPlayerCell():
                 Cases[cell]="X"
                 break
 
-    elif PlayerTurn == 2:
+    elif player_turn == 2:
         cell = random.randint(1,9) # Generate a random number
         while True :
             if cell > 9 or cell < 1:
@@ -29,59 +26,43 @@ def AskPlayerCell():
                 Cases[cell]="O"
                 break
 
+    return player_turn  # Retourne le tour (inchangé ici, mais pour cohérence)
 
-def ChangePlayerTurn():
-    global PlayerTurn # We initialize the value as global cause he gonna create a local value
+def ChangePlayerTurn(player_turn):
+    if player_turn == 1 :
+        return 2
+    elif player_turn == 2 :
+        return 1
+    # Plus de return error nécessaire
 
-    if PlayerTurn == 1 :
-        PlayerTurn = 2
-    elif PlayerTurn == 2 :
-        PlayerTurn = 1
-    else:
-        return error
-
-
-def CheckWinCondition():
-    global GameIsRunning
-
+def CheckWinCondition(game_is_running):
     match Cases:
         case {1:"X", 2:"X",3:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {4:"X", 5:"X",6:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {7:"X", 8:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {1:"X", 5:"X",9:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
         case {3:"X", 5:"X",7:"X"}:
-            GameIsRunning = False
-            return print("Player 1 Win")
+            return False, "Player 1 Win"
 
         case {1:"O", 2:"O",3:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
+            return False, "IA Win"
         case {4:"O", 5:"O",6:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
+            return False, "IA Win"
         case {7:"O", 8:"O",9:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
+            return False, "IA Win"
         case {1:"O", 5:"O",9:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
+            return False, "IA Win"
         case {3:"O", 5:"O",7:"O"}:
-            GameIsRunning = False
-            return print("IA Win")
+            return False, "IA Win"
 
     if all(value != " " for value in Cases.values()):
-        GameIsRunning = False
-        return print("Draw")
+        return False, "Draw"
     else:
-        return 
+        return game_is_running, None  # Aucun changement
 
 def DisplayCells():
     print("")
@@ -94,11 +75,16 @@ def DisplayCells():
 
 
 def InitGame():
-    while GameIsRunning:
-        AskPlayerCell()
+    player_turn = 1
+    game_is_running = True
+    
+    while game_is_running:
+        AskPlayerCell(player_turn)
         DisplayCells()
-        CheckWinCondition()
-        ChangePlayerTurn()
+        game_is_running, message = CheckWinCondition(game_is_running)
+        if message:
+            print(message)
+        player_turn = ChangePlayerTurn(player_turn)
 
 
 InitGame()
