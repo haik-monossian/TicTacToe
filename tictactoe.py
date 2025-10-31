@@ -1,8 +1,8 @@
 import random
 cases={1:" ", 2:" ", 3:" ", 4:" ", 5:" ", 6:" ", 7:" ", 8:" ", 9:" "};
 
-def ask_player_cell(player_turn, mod):
-    if player_turn == 1:
+def ask_player_cell(player_turn, mod): # Ask to the player in which cell to play
+    if player_turn == 1: # Player
         cell = int(input("Player 1 turn (Enter a number 1 - 9) : "))
         while True :
             if cell > 9 or cell < 1:
@@ -13,7 +13,7 @@ def ask_player_cell(player_turn, mod):
                 cases[cell]="X"
                 break
 
-    elif player_turn == 2 and mod == 1:
+    elif player_turn == 2 and mod == 1: # For IA in Easy mod (random)
         cell = random.randint(1,9)
         while True :
             if cases[cell] != " ":
@@ -22,21 +22,21 @@ def ask_player_cell(player_turn, mod):
                 cases[cell]="O"
                 break
 
-    elif player_turn == 2 and mod == 2:
+    elif player_turn == 2 and mod == 2: # For IA in Hard mod (best move)
         cell = get_best_move(cases)
         print(f"IA took {cell}")
         cases[cell]="O"
 
     return player_turn
 
-def change_player_turn(player_turn):
+def change_player_turn(player_turn): # Change player turn
     if player_turn == 1 :
         return 2
     elif player_turn == 2 :
         return 1
 
 
-def minimax(board, depth, is_maximizing):
+def minimax(board, depth, is_maximizing): # Recursive minimax algorithm - evaluates all game outcomes
     result = evaluate_board(board)
 
     if result !=0:
@@ -45,7 +45,7 @@ def minimax(board, depth, is_maximizing):
     if is_board_full(board):
         return 0
 
-    if is_maximizing:
+    if is_maximizing: # Evaluate for O player score 
         best_score = float ('-inf')
         for move in get_available_moves(board):
             board[move] = 'O'
@@ -53,7 +53,7 @@ def minimax(board, depth, is_maximizing):
             board[move] = ' '
             best_score = max(score, best_score)
         return best_score
-    else:
+    else: # Evaluate for X player score
         best_score = float ('inf')
         for move in get_available_moves(board):
             board[move] = 'X'
@@ -62,7 +62,7 @@ def minimax(board, depth, is_maximizing):
             best_score = min(score, best_score)
         return best_score
 
-def get_best_move(board):
+def get_best_move(board): # Finds optimal AI move using minimax
     best_score = float ('-inf')
     best_move = None
 
@@ -77,13 +77,13 @@ def get_best_move(board):
 
     return best_move
 
-def get_available_moves(board):
+def get_available_moves(board): # Returns list of empty cells
     return [key for key, value in board.items() if value == " "]
 
-def is_board_full(board):
+def is_board_full(board): # Checks if board is completely filled  
     return all(value != " " for value in board.values())
 
-def evaluate_board(board):
+def evaluate_board(board): # Evaluates board state : 1=AI wins, -1=player wins, 0=draw/ongoing
     # Vérifie toutes les combinaisons gagnantes
     winning_combinations = [
         [1, 2, 3], [4, 5, 6], [7, 8, 9],
@@ -101,7 +101,7 @@ def evaluate_board(board):
     return 0  # Match nul ou jeu en cours
 
 
-def check_win_condition(game_is_running):
+def check_win_condition(game_is_running): # Check if there is a win combinaison for each player or if it's draw
     match cases:
         case {1:"X", 2:"X",3:"X"}:
             return False, "Player 1 Win"
@@ -130,7 +130,7 @@ def check_win_condition(game_is_running):
     else:
         return game_is_running, None
 
-def display_cells():
+def display_cells(): # display the game state in the terminal
     print("")
     print(f" {cases[1]} | {cases[2]} | {cases[3]} ")
     print("-----------")
@@ -140,11 +140,11 @@ def display_cells():
     print("")
 
 
-def init_game():
+def init_game(): # All the game logic with all functions 
     player_turn = 1
     game_is_running = True
     mod = 0
-    while True:
+    while True: # Choose the IA difficulty / input security 
         if mod not in [1,2]:
             mod = int(input("Enter 1 : Easy / 2 : Hard : "))
         else:
@@ -154,9 +154,8 @@ def init_game():
             elif mod == 2:
                 print("Hard mod")
             break
-
     
-    while game_is_running:
+    while game_is_running: # The game 
         ask_player_cell(player_turn, mod)
         display_cells()
         game_is_running, message = check_win_condition(game_is_running)
@@ -164,5 +163,5 @@ def init_game():
             print(message)
         player_turn = change_player_turn(player_turn)
 
-
+# Start game
 init_game()
