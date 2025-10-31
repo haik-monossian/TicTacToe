@@ -4,7 +4,7 @@ import sys
 
 pygame.init()
 
-# --- Constantes ---
+# --- Constants ---
 HEIGHT = 600
 WIDTH = 600
 DIMENSION_CASE = WIDTH // 3
@@ -24,8 +24,8 @@ Cases = {i: " " for i in range(1, 10)}
 game_message = None
 game_mode = None
 
-# --- Fonctions d'affichage ---
-def DrawBoard():
+# --- Display functions ---
+def DrawBoard(): # Draw cases and symbols
     screen.fill(BACKGROUND_COLOR)
 
     for i in range(3):
@@ -53,7 +53,7 @@ def DrawBoard():
         screen.blit(text_surface, text_rect)
 
 
-def draw_text(text, size, color, x, y):
+def draw_text(text, size, color, x, y): # Draw the win text for each player 
     font = pygame.font.Font(None, size)
     surface = font.render(text, True, color)
     rect = surface.get_rect(center=(x, y))
@@ -61,8 +61,8 @@ def draw_text(text, size, color, x, y):
     return rect
 
 
-# --- Logique du jeu ---
-def CheckWinCondition():
+# --- Game logic ---
+def CheckWinCondition(): # Check if there is a Win or a Draw for each step 
     win_conditions = [
         (1, 2, 3), (4, 5, 6), (7, 8, 9),
         (1, 4, 7), (2, 5, 8), (3, 6, 9),
@@ -79,12 +79,12 @@ def CheckWinCondition():
 
 
 # --- IA ---
-def ia_easy_move():
+def ia_easy_move(): # Easy IA random logic
     empty_cells = [i for i, v in Cases.items() if v == " "]
     return random.choice(empty_cells) if empty_cells else None
 
 
-def evaluate_board():
+def evaluate_board(): # Judge : if O win return 1 if X win return -1
     win_conditions = [
         (1, 2, 3), (4, 5, 6), (7, 8, 9),
         (1, 4, 7), (2, 5, 8), (3, 6, 9),
@@ -99,14 +99,14 @@ def evaluate_board():
     return 0
 
 
-def minimax(is_maximizing):
+def minimax(is_maximizing): # Predict all patterns with O and X to find the best score with the atm position
     score = evaluate_board()
     if score != 0:
         return score
     if all(v != " " for v in Cases.values()):
         return 0
 
-    if is_maximizing:
+    if is_maximizing: # Find the best O play
         best_score = -999
         for key in Cases:
             if Cases[key] == " ":
@@ -115,7 +115,7 @@ def minimax(is_maximizing):
                 Cases[key] = " "
                 best_score = max(best_score, current_score)
         return best_score
-    else:
+    else: # Find the best X play
         best_score = 999
         for key in Cases:
             if Cases[key] == " ":
@@ -126,7 +126,7 @@ def minimax(is_maximizing):
         return best_score
 
 
-def ia_hard_move():
+def ia_hard_move(): # Find the best cell to play by using minimax()
     best_score = -999
     best_move = None
     for key in Cases:
@@ -140,14 +140,15 @@ def ia_hard_move():
     return best_move
 
 
-# --- Menu principal ---
-def main_menu():
+# --- Main menu ---
+def main_menu(): # Show Game menu
     global game_mode
     menu_running = True
     while menu_running:
         screen.fill(BACKGROUND_COLOR)
         draw_text("TIC TAC TOE", 80, WHITE, WIDTH // 2, 150)
 
+        # buttons logic 
         play_btn1 = draw_text("Player vs Player", 50, BLUE, WIDTH // 2, 300)
         play_btn2 = draw_text("Player vs IA (Easy)", 50, BLUE, WIDTH // 2, 380)
         play_btn3 = draw_text("Player vs IA (Hard)", 50, BLUE, WIDTH // 2, 460)
@@ -177,8 +178,8 @@ def main_menu():
         pygame.display.flip()
 
 
-# --- Boucle de jeu ---
-def game_loop():
+# --- Game loop ---
+def game_loop(): # All the game logic when the game start 
     global Cases, game_message
     running = True
     player_turn = "X"
@@ -190,7 +191,7 @@ def game_loop():
                 running = False
                 sys.exit()
 
-            # --- Clic du joueur ---
+            # --- Player click event ---
             if event.type == pygame.MOUSEBUTTONDOWN and game_message is None:
                 if event.button == 1 and (game_mode == "PVP" or player_turn == "X"):
                     mouse_x, mouse_y = event.pos
@@ -210,13 +211,13 @@ def game_loop():
 
                             break
 
-            # --- Rejouer après la fin ---
+            # --- Restart after end ---
             elif event.type == pygame.MOUSEBUTTONDOWN and game_message is not None:
                 Cases = {i: " " for i in range(1, 10)}
                 player_turn = "X"
                 game_message = None
 
-        # --- IA (si nécessaire) ---
+        # --- IA ---
         if game_message is None and player_turn == "O" and game_mode in ["EASY", "HARD"]:
             pygame.time.delay(300)
             move = ia_easy_move() if game_mode == "EASY" else ia_hard_move()
@@ -232,7 +233,7 @@ def game_loop():
         pygame.display.flip()
 
 
-# --- Lancement ---
+# --- Start ---
 main_menu()
 pygame.quit()
 print("Game closed")
